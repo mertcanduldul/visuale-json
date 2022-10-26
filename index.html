@@ -1,0 +1,248 @@
+<html>
+
+<head>
+    <title>sample</title>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Quicksand" />
+    <style type="text/css">
+        /* common */
+        .mark-water {
+            color: #bbb;
+        }
+
+        /* eof common */
+
+        /* node */
+        .node-content-wrapper {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fff;
+        }
+
+        .node-content-wrapper ul {
+            border-left: 1px dotted #ccc;
+            list-style: none;
+            padding-left: 25px;
+            margin: 0px;
+        }
+
+        .node-content-wrapper ul li {
+            list-style: none;
+            border-bottom: 0;
+            padding-bottom: 0
+        }
+
+        .node-hgl-path {
+            background-color: #fefbdf;
+        }
+
+        .node-bracket {
+            font-weight: bold;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .node-bracket:hover {
+            color: #999;
+        }
+
+        /* eof node */
+
+        /* leaf */
+        .leaft-container {
+            width: 100%;
+            max-width: 300px;
+            height: 100%;
+        }
+
+        .title {
+            color: #ccc;
+        }
+
+        .string {
+            color: #080;
+        }
+
+        .number {
+            color: #ccaa00;
+        }
+
+        .boolean {
+            color: #1979d3;
+        }
+
+        .date {
+            color: #aa6655;
+        }
+
+        .null {
+            color: #ff5050;
+        }
+
+        /* eof leaf */
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
+    <script type="text/javascript" src="https://warfares.github.io/pretty-json/libs/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="https://warfares.github.io/pretty-json/libs/underscore-min.js"></script>
+    <script type="text/javascript" src="https://warfares.github.io/pretty-json/libs/backbone-min.js"></script>
+    <script type="text/javascript" src="https://warfares.github.io/pretty-json/pretty-json-min.js"></script>
+
+</head>
+
+<body>
+    <script>
+        $(document).ready(function () {
+
+            var el = {
+                btnAction: $('#action'),
+                btnClear: $('#clear'),
+                input: $('#input'),
+                result: $('#result')
+            };
+
+            var el2 = {
+                btnAction2: $('#action2'),
+                btnClear2: $('#clear2'),
+                input2: $('#input2'),
+                result2: $('#result2')
+            };
+
+            var demo = {
+                name: "Mert Can Düldül"
+            };
+
+            el.input.val(JSON.stringify(demo, null, 4));
+
+            el.btnAction.on('click', function () {
+                var json = el.input.val();
+                var o;
+                try { o = JSON.parse(json); }
+                catch (e) {
+                    alert('not valid JSON');
+                    return;
+                }
+
+                var node = new PrettyJSON.view.Node({
+                    el: el.result,
+                    data: o
+                });
+            });
+
+            el.btnClear.on('click', function () {
+                el.input.val('');
+                el.result.html('');
+            });
+
+            el2.input2.val(JSON.stringify(demo, null, 4));
+
+            el2.btnAction2.on('click', function () {
+                var json = el2.input2.val();
+                var o;
+                try { o = JSON.parse(json); }
+                catch (e) {
+                    alert('not valid JSON');
+                    return;
+                }
+
+                var node = new PrettyJSON.view.Node({
+                    el: el2.result2,
+                    data: o
+                });
+            });
+
+            el2.btnClear2.on('click', function () {
+                el2.input2.val('');
+                el2.result2.html('');
+            });
+        });
+    </script>
+    <div class="container-fluid p-5">
+        <div class="row d-flex justify-content-between">
+            <div class="col-md-4">
+                <h1>Request JSON PARSE</h1>
+                <textarea id="input" class="form-control" rows="10"></textarea>
+                <br />
+                <button id="fix">Fix Json</button>
+                <button id="action">Visuale</button>
+                <button id="clear">Clear</button>
+                <br />
+                <br />
+                <span id="result"></span>
+            </div>
+            <div class="col-md-4">
+                <h1>Response JSON PARSE</h1>
+                <textarea id="input2" class="form-control" rows="10"></textarea>
+                <br />
+                <button id="fix2">Fix Json</button>
+                <button id="action2">Visuale</button>
+                <button id="clear2">Clear</button>
+                <br />
+                <br />
+                <span id="result2"></span>
+            </div>
+        </div>
+    </div>
+    <script defer>
+        document.querySelector("#fix").addEventListener("click", () => {
+            const input = document.querySelector("#input");
+            input.value = parse(input.value);
+        })
+        document.querySelector("#fix2").addEventListener("click", () => {
+            const input = document.querySelector("#input2");
+            input.value = parseResult(input.value);
+        })
+        function textToJson(str) {
+            str = str.replace("|", "")
+            var json = {};
+            var arr = str.split(", ")
+            for (let index = 1; index < arr.length; index++) {
+                const arr2 = arr[index].split("=");
+                json[arr2[0]] = arr2[1];
+            }
+            return json;
+        }
+        function parse(str) {
+            let data = str;
+            const arr = data.split("\n");
+            let jsonResult;
+            let headers;
+            arr.forEach((item, index) => {
+
+                if (item.includes("Scope")) {
+                    headers = textToJson(item)
+                }
+
+                if (item.includes("Json")) {
+
+                    const T = item.split("=")
+                    T.forEach((value, index) => {
+                        if (index == 1) {
+                            const jsonData = value.replace("|", "");
+                            jsonResult = jsonData;
+                        }
+                    })
+                }
+            });
+            const _data = { "headers": headers, "body": JSON.parse(jsonResult) }
+
+            return JSON.stringify(_data, null, 4);
+        }
+        function parseResult(str) {
+            const data = str.split("Type=Response, ")[1].replace("|", "").split(", ");
+            let JSON_DATA = {};
+            data.length--;
+            data.forEach((item) => {
+                const [key, value] = item.split("=");
+                JSON_DATA[key] = value;
+            });
+
+            const jsonResult = str.split("Json=")[1].replace("|", "")
+
+            return JSON.stringify({ "headers": JSON_DATA, "body": JSON.parse(jsonResult) }, null, 4);
+            //const result = [JSON_DATA, JSON.parse(jsonResult)];
+
+        }
+    </script>
+</body>
+
+</html
